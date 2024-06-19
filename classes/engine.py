@@ -14,11 +14,14 @@ class HH(Engine):
     vacancies_all = []
     vacancies_dicts = []
 
-    def __init__(self, vacancy):
+    def __init__(self, vacancy, quantify):
         self.vacancy = vacancy
+        self.quantify = quantify
 
     def get_request(self):
-        for num in range(1):
+        """Ищет определенное количество(которое указанно в self.quantify) вакансий на HH.ru по self.vacancy
+        и возвращает вакансии только с нужными данными"""
+        for num in range(self.quantify // 20):
             url = 'https://api.hh.ru/vacancies'
             vacancies_per_page = 20
             params = {
@@ -48,7 +51,7 @@ class HH(Engine):
                                         'salary_from': info['items'][vacancy]['salary']['from'],
                                         'salary_to': info['items'][vacancy]['salary']['to']}
                         if vacancy_dict['salary_from'] is None:
-                            vacancy_dict['salary_from'] = "не указано"
+                            vacancy_dict['salary_from'] = 0
                         elif vacancy_dict['salary_to'] is None:
                             vacancy_dict['salary_to'] = "не указано"
                         self.vacancies_dicts.append(vacancy_dict)
@@ -56,12 +59,14 @@ class HH(Engine):
 
     @staticmethod
     def make_json(vacancy, vacancies_dicts):
+        """Создает json файл"""
         with open(f"{vacancy}_hh_ru.json", 'w', encoding='utf-8') as file:
             json.dump(vacancies_dicts, file, indent=2, ensure_ascii=False)
         return f"Вакансии добавлены в файл: {vacancy}_hh_ru.json"
 
     @staticmethod
     def sorting(filename, type_of_sort, vacancies, num_of_vacancies=None):
+        """Сортирует данные по salary_from и создаёт файл с сортированными данными"""
         vacancies_list = []
         vacancies_sort = sorted(vacancies, key=lambda vacancy: vacancy['salary_from'], reverse=type_of_sort)
         for vacancy in vacancies_sort:

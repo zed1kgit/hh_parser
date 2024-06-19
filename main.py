@@ -13,3 +13,16 @@ from classes.engine import HH
 Для того чтобы это все работало
 вам будет необходимо несколько модифицировать код который находится в пакете classes внутри файла engine.py
 """
+
+vac_choice = input("Напишите вакансию для поиска\n")
+quant = int(input("Сколько вакансий просмотреть от 20 до 200 c шагом 20 вакансий\n"))
+sort = input("Нужна ли сортировка по зарплате(\"y\" - да; n - \"нет\")\n")
+
+hh = HH(vac_choice, quant)
+vacancies = hh.get_request()
+print(hh.make_json(vac_choice, vacancies))
+if sort == 'y':
+    sort_quant = int(input("Сколько отсортированных вакансий вывести\n"))
+    sorted_vacancies = hh.sorting(vac_choice, True, vacancies)
+    for i in range(sort_quant):
+        print(sorted_vacancies[i])
